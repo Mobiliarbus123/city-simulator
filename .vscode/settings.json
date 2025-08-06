@@ -1,0 +1,20 @@
+{
+    "cSpell.words": [
+        "addpath",
+        "camlight",
+        "fileparts",
+        "fullfile",
+        "fullpath",
+        "gouraud",
+        "isfield",
+        "ismember",
+        "isstruct",
+        "mfilename",
+        "nargin",
+        "newyork",
+        "stlread",
+        "xlabel",
+        "ylabel",
+        "zlabel"
+    ]
+}
