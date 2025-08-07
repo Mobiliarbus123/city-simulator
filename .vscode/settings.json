@@ -12,7 +12,11 @@
         "mfilename",
         "nargin",
         "newyork",
+        "parfor",
+        "Postgre",
         "stlread",
+        "trimesh",
+        "waitbar",
         "xlabel",
         "ylabel",
         "zlabel"

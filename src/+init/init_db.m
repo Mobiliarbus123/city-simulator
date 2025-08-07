@@ -6,8 +6,9 @@ DB_CONFIG.name = 'drone';
 DB_CONFIG.user = 'postgres';
 DB_CONFIG.pass = '';
 
-try
+save_to_file = false;
 
+try
     conn = database(DB_CONFIG.name, DB_CONFIG.user, DB_CONFIG.pass, ...
         'org.postgresql.Driver', ['jdbc:postgresql://' DB_CONFIG.host ':' num2str(DB_CONFIG.port) '/' DB_CONFIG.name]);
 
@@ -19,5 +20,7 @@ try
     end
 
 catch ME
-    error('数据库连接失败: %s', ME.message);
+    fprintf('数据库连接失败：%s\n', ME.message);
+    fprintf('回退到存入文件\n');
+    save_to_file = true;
 end
