@@ -1,4 +1,9 @@
 function [UDF_grid, context] = build_udf(vertices, faces, padding, sdf_resolution)
+    T = triangulation(faces, vertices);
+    % --- 2. ➡️ 从对象中提取数据，创建函数所需的 "转接头" 结构体 ---
+    FV.Faces = T.ConnectivityList;    % 提取面数据
+    FV.Vertices = T.Points;         % 提取顶点数据
+
     % context: min_bounds, max_bounds, grid_dims, x_vec, y_vec, z_vec
     context.min_bounds = min(vertices, [], 1) - padding;
     context.max_bounds = max(vertices, [], 1) + padding;
@@ -17,12 +22,7 @@ function [UDF_grid, context] = build_udf(vertices, faces, padding, sdf_resolutio
 
     % --- 并行计算距离 ---
     distances = zeros(total_voxels, 1);
+    [distances, ~] = point2trimesh(FV, 'QueryPoints', query_points, 'Algorithm', 'parallel');
 
-    parfor i = 1:total_voxels
-        % 使用point2trimesh计算每个点到网格的最近距离
-        distances(i) = point2trimesh(triangulation(faces, vertices), query_points(i, :), 'QueryType', 'point');
-    end
-
-    % 将一维的距离向量重塑为三维的SDF网格
-    UDF_grid = reshape(distances, context.grid_dims); % Unsigned Distance Field
+    UDF_grid = reshape(distances, context.grid_dims);
 end

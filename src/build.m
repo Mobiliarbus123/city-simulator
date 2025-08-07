@@ -1,5 +1,5 @@
 init.init_env;
-init.init_db;
+%init.init_db;
 
 MODEL_NAME_IN_DB = 'newyork_sdf_v1';
 SDF_RESOLUTION = 2.0; % 米/体素。分辨率越高，计算越慢，数据量越大。建议从较大值开始测试。
