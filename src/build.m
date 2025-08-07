@@ -8,12 +8,7 @@ CHUNK_SIZE = 32; % 将SDF切割成 32x32x32 的小块。建议为2的幂（16, 3
 SRID = 0; % 空间参考ID。0代表局部笛卡尔坐标系。
 
 % 加载 STL 模型
-try
-    [vertices, faces] = utils.load_model(stl_file);
-catch ME
-    fprintf(2, '!!! 模型加载失败: %s\n', ME.message);
-    return;
-end
+[vertices, faces] = utils.load_model(stl_file);
 
 % 数据预处理
 vertices = [vertices(:, 1), vertices(:, 3), vertices(:, 2)] * 60;
@@ -26,30 +21,22 @@ fprintf('模型包围盒尺寸: X=%.5f, Y=%.5f, Z=%.5f\n', size_x, size_y, size_
 fprintf('Vertices 矩阵的尺寸: %d x %d\n', size(vertices, 1), size(vertices, 2));
 fprintf('Faces 矩阵的尺寸: %d x %d\n', size(faces, 1), size(faces, 2));
 fprintf('--------------------\n\n');
+clear size_x size_y size_z;
 
-% 构建 UDF 网格
-% try
-    fprintf('--- 构建 UDF 网格 ---\n');
-    fprintf("开始构建 UDF 网格...\n");
-    tic;
-    [UDF_grid, UDF_context] = utils.build_udf(vertices, faces, PADDING, SDF_RESOLUTION);
-    fprintf('UDF 网格构建完成。\n');
-    toc;
-    fprintf('--------------------\n\n');
-% catch ME
-%     fprintf(2, '!!! UDF 网格构建失败: %s\n', ME.message);
-%     error(ME)
-%     return;
-% end
+fprintf('--- 构建 UDF 网格 ---\n');
+fprintf("开始构建 UDF 网格...\n");
+tic;
+[UDF_grid, UDF_context] = utils.build_udf(vertices, faces, PADDING, SDF_RESOLUTION);
+fprintf('UDF 网格构建完成。\n');
+toc;
+fprintf('--------------------\n\n');
+
+% 丢弃无效数据
+clear vertices faces;
 
 % 将 UDF 网格写入数据库
-try
-    utils.write_udf(UDF_grid, MODEL_NAME_IN_DB, UDF_context, CHUNK_SIZE, SRID);
-    fprintf('UDF 网格数据已成功写入数据库。\n');
-catch ME
-    fprintf(2, '!!! UDF 网格数据写入数据库失败: %s\n', ME.message);
-    return;
-end
+utils.write_udf(UDF_grid, MODEL_NAME_IN_DB, UDF_context, CHUNK_SIZE, SRID);
+fprintf('UDF 网格数据已成功写入数据库。\n');
 
 % % 可视化
 % utils.show_model(vertices, faces, "New York");
