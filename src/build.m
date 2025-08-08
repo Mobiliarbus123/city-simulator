@@ -37,10 +37,10 @@ clear vertices faces;
 
 % 将 UDF 网格写入数据库
 if save_to_file
-    save(init.build_path(sprintf("out/%s.mat", MODEL_NAME_IN_DB)), 'UDF_grid', 'UDF_context', '-v7.3');
+    save(init.build_path(sprintf("run/%s.mat", MODEL_NAME_IN_DB)), 'UDF_grid', 'UDF_context', '-v7.3');
     fprintf('UDF 网格已保存到文件。\n');
 else
-    save(init.build_path(sprintf("out/%s.mat", MODEL_NAME_IN_DB)), 'UDF_grid', 'UDF_context', '-v7.3');
+    save(init.build_path(sprintf("run/%s.mat", MODEL_NAME_IN_DB)), 'UDF_grid', 'UDF_context', '-v7.3');
     utils.write_udf(UDF_grid, MODEL_NAME_IN_DB, UDF_context, CHUNK_SIZE, SRID);
     fprintf('UDF 网格数据已成功写入数据库。\n');
 end
