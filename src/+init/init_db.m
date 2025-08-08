@@ -1,4 +1,4 @@
-javaaddpath(init.build_path('../../lib/jar/postgresql-42.7.7.jar'));
+javaaddpath(init.build_path('lib/jar/postgresql-42.7.7.jar'));
 
 DB_CONFIG.host = 'localhost';
 DB_CONFIG.port = 5432;

@@ -1,7 +1,7 @@
 init.init_env;
 init.init_db;
 
-MODEL_NAME_IN_DB = 'newyork_udf_v1';
+MODEL_NAME_IN_DB = 'newyork_udf_v1'; % 数据库中模型的名称
 SDF_RESOLUTION = 2.0; % 米/体素。分辨率越高，计算越慢，数据量越大。建议从较大值开始测试。
 PADDING = 50.0; % 米。在模型边界外额外扩展的距离，确保无人机有足够空间。
 CHUNK_SIZE = 32; % 将SDF切割成 32x32x32 的小块。建议为2的幂（16, 32, 64）。
@@ -37,9 +37,10 @@ clear vertices faces;
 
 % 将 UDF 网格写入数据库
 if save_to_file
-    save('newyork_udf_v1.mat', 'UDF_grid', 'UDF_context', '-v7.3');
+    save(init.build_path(sprintf("out/%s.mat", MODEL_NAME_IN_DB)), 'UDF_grid', 'UDF_context', '-v7.3');
     fprintf('UDF 网格已保存到文件。\n');
 else
+    save(init.build_path(sprintf("out/%s.mat", MODEL_NAME_IN_DB)), 'UDF_grid', 'UDF_context', '-v7.3');
     utils.write_udf(UDF_grid, MODEL_NAME_IN_DB, UDF_context, CHUNK_SIZE, SRID);
     fprintf('UDF 网格数据已成功写入数据库。\n');
 end
