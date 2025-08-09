@@ -15,6 +15,7 @@ function show_model(vertices, faces, name)
         xlabel('X');
         ylabel('Y');
         zlabel('Z');
+        set(gca,'YDir','reverse');
         title(name, 'Interpreter', 'none'); % 防止文件名中的下划线被转义
         grid on;
         rotate3d on; % 允许用鼠标旋转视角

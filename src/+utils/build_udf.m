@@ -1,10 +1,9 @@
-function [UDF_grid, context] = build_udf(vertices, faces, padding, sdf_resolution)
-    FV.faces = faces; % 提取面数据
-    FV.vertices = vertices; % 提取顶点数据
-
+function [UDF_grid, context] = build_udf(vertices, faces, padding, sdf_resolution, bounds, ground)
+    % bounds: {min: [x_min, y_min, z_min], max: [x_max, y_max, z_max]}
     % context: min_bounds, max_bounds, grid_dims, x_vec, y_vec, z_vec
-    context.min_bounds = min(vertices, [], 1) - padding;
-    context.max_bounds = max(vertices, [], 1) + padding;
+
+    context.min_bounds = bounds.min - padding;
+    context.max_bounds = bounds.max + padding;
 
     % 创建网格坐标向量
     context.x_vec = context.min_bounds(1):sdf_resolution:context.max_bounds(1);
@@ -24,9 +23,11 @@ function [UDF_grid, context] = build_udf(vertices, faces, padding, sdf_resolutio
     ppm = ParforProgressbar(total_voxels, 'progressBarUpdatePeriod', 3);
 
     distances = zeros(total_voxels, 1);
+    bvh = utils.SimpleBVH(vertices, faces);
 
     parfor i = 1:total_voxels
-        [dist_val, ~] = point2trimesh(FV, 'QueryPoints', query_points(i, :));
+        p = query_points(i, :);
+        dist_val = min(bvh.query_single_point(p), abs(p(3) - ground));
         distances(i) = dist_val;
         ppm.increment();
     end

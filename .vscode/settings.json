@@ -1,5 +1,6 @@
 {
     "cSpell.words": [
+        "AABB",
         "addpath",
         "camlight",
         "fileparts",
@@ -9,11 +10,13 @@
         "isfield",
         "ismember",
         "isstruct",
+        "meshgrid",
         "mfilename",
         "nargin",
         "newyork",
         "parfor",
         "Postgre",
+        "Progressbar",
         "stlread",
         "trimesh",
         "waitbar",

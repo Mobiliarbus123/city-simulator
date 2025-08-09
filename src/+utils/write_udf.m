@@ -1,4 +1,4 @@
-function write_udf(UDF_grid, model_name, context, chunk_size, sr_id)
+function write_udf(conn, UDF_grid, model_name, context, chunk_size, sr_id, sdf_resolution)
 
     try
         % 首先检查是否已存在同名模型，如果存在则删除旧数据（或提示错误）
@@ -6,15 +6,16 @@ function write_udf(UDF_grid, model_name, context, chunk_size, sr_id)
 
         meta_sql = ['INSERT INTO sdf_metadata (model_name, resolution, grid_dim_x, grid_dim_y, grid_dim_z, chunk_size, min_bound_x, min_bound_y, min_bound_z, sr_id) ' ...
                     'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'];
-        exec(conn, meta_sql, {model_name, SDF_RESOLUTION, context.grid_dims(2), context.grid_dims(1), context.grid_dims(3), chunk_size, context.min_bounds(1), context.min_bounds(2), context.min_bounds(3), sr_id});
+        exec(conn, meta_sql, {model_name, sdf_resolution, context.grid_dims(2), context.grid_dims(1), context.grid_dims(3), chunk_size, context.min_bounds(1), context.min_bounds(2), context.min_bounds(3), sr_id});
 
         curs = exec(conn, 'SELECT id FROM sdf_metadata WHERE model_name = ?', {model_name});
         curs = fetch(curs);
         metadata_id = curs.Data{1, 1};
         fprintf('  元数据存储成功，模型 [%s] 的ID为: %d\n\n', model_name, metadata_id);
     catch ME
-        rollback(conn); close(conn); % 出错则回滚事务并关闭连接
-        error('存储元数据失败: %s', ME.message);
+        rollback(conn); % 出错则回滚事务并关闭连接
+        disp(ME);
+        throw(ME);
     end
 
     sql_insert_chunk = 'INSERT INTO sdf_chunks_postgis (metadata_id, chunk_bbox, chunk_data) VALUES (?, ST_GeomFromText(?, ?), ?)';
