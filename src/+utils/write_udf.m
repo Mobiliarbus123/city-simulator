@@ -1,4 +1,4 @@
-function write_udf(conn, UDF_grid, model_name, context, chunk_size, sr_id, sdf_resolution)
+function write_udf(conn, udf, model_name, chunk_size, sr_id, sdf_resolution)
 
     try
         % 首先检查是否已存在同名模型，如果存在则删除旧数据（或提示错误）
@@ -6,7 +6,7 @@ function write_udf(conn, UDF_grid, model_name, context, chunk_size, sr_id, sdf_r
 
         meta_sql = ['INSERT INTO sdf_metadata (model_name, resolution, grid_dim_x, grid_dim_y, grid_dim_z, chunk_size, min_bound_x, min_bound_y, min_bound_z, sr_id) ' ...
                     'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'];
-        exec(conn, meta_sql, {model_name, sdf_resolution, context.grid_dims(2), context.grid_dims(1), context.grid_dims(3), chunk_size, context.min_bounds(1), context.min_bounds(2), context.min_bounds(3), sr_id});
+        exec(conn, meta_sql, {model_name, sdf_resolution, udf.grid_dims(2), udf.grid_dims(1), udf.grid_dims(3), chunk_size, udf.min_bounds(1), udf.min_bounds(2), udf.min_bounds(3), sr_id});
 
         curs = exec(conn, 'SELECT id FROM sdf_metadata WHERE model_name = ?', {model_name});
         curs = fetch(curs);
@@ -20,25 +20,25 @@ function write_udf(conn, UDF_grid, model_name, context, chunk_size, sr_id, sdf_r
 
     sql_insert_chunk = 'INSERT INTO sdf_chunks_postgis (metadata_id, chunk_bbox, chunk_data) VALUES (?, ST_GeomFromText(?, ?), ?)';
     chunk_count = 0;
-    num_chunks_total = ceil(context.grid_dims(3) / chunk_size) * ceil(context.grid_dims(1) / chunk_size) * ceil(context.grid_dims(2) / chunk_size);
+    num_chunks_total = ceil(udf.grid_dims(3) / chunk_size) * ceil(udf.grid_dims(1) / chunk_size) * ceil(udf.grid_dims(2) / chunk_size);
 
     try
 
-        for z_start = 1:chunk_size:context.grid_dims(3)
+        for z_start = 1:chunk_size:udf.grid_dims(3)
 
-            for y_start = 1:chunk_size:context.grid_dims(1)
+            for y_start = 1:chunk_size:udf.grid_dims(1)
 
-                for x_start = 1:chunk_size:context.grid_dims(2)
+                for x_start = 1:chunk_size:udf.grid_dims(2)
                     % 提取数据块
-                    x_end = min(x_start + chunk_size - 1, context.grid_dims(2));
-                    y_end = min(y_start + chunk_size - 1, context.grid_dims(1));
-                    z_end = min(z_start + chunk_size - 1, context.grid_dims(3));
-                    chunk_data_matrix = UDF_grid(y_start:y_end, x_start:x_end, z_start:z_end);
+                    x_end = min(x_start + chunk_size - 1, udf.grid_dims(2));
+                    y_end = min(y_start + chunk_size - 1, udf.grid_dims(1));
+                    z_end = min(z_start + chunk_size - 1, udf.grid_dims(3));
+                    chunk_data_matrix = udf.grid(y_start:y_end, x_start:x_end, z_start:z_end);
 
                     % 计算边界盒世界坐标
-                    min_x = context.x_vec(x_start); max_x = context.x_vec(x_end);
-                    min_y = context.y_vec(y_start); max_y = context.y_vec(y_end);
-                    min_z = context.z_vec(z_start); max_z = context.z_vec(z_end);
+                    min_x = udf.x_vec(x_start); max_x = udf.x_vec(x_end);
+                    min_y = udf.y_vec(y_start); max_y = udf.y_vec(y_end);
+                    min_z = udf.z_vec(z_start); max_z = udf.z_vec(z_end);
 
                     % 生成立方体边界盒的WKT字符串
                     bbox_wkt = sprintf('POLYHEDRALSURFACE Z (((%f %f %f,%f %f %f,%f %f %f,%f %f %f,%f %f %f)),((%f %f %f,%f %f %f,%f %f %f,%f %f %f,%f %f %f)),((%f %f %f,%f %f %f,%f %f %f,%f %f %f,%f %f %f)),((%f %f %f,%f %f %f,%f %f %f,%f %f %f,%f %f %f)),((%f %f %f,%f %f %f,%f %f %f,%f %f %f,%f %f %f)),((%f %f %f,%f %f %f,%f %f %f,%f %f %f,%f %f %f)))', ...

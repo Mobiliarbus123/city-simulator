@@ -14,7 +14,7 @@ classdef SimpleBVH < handle
     end
     
     methods
-        function obj = SimpleBVH(vertices, faces, ground)
+        function obj = SimpleBVH(vertices, faces)
             % 构造函数：构建BVH树
             obj.Vertices = vertices;
             obj.Faces = faces;

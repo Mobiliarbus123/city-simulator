@@ -25,7 +25,7 @@ clear size_x size_y size_z;
 fprintf('--- 构建 UDF 网格 ---\n');
 fprintf("开始构建 UDF 网格...\n");
 tic;
-[UDF_grid, UDF_context] = utils.build_udf(vertices, faces, PADDING, SDF_RESOLUTION, bound, 35);
+udf = utils.build_udf(vertices, faces, PADDING, SDF_RESOLUTION, bound, 35);
 fprintf('UDF 网格构建完成。\n');
 toc;
 fprintf('--------------------\n\n');
@@ -35,11 +35,11 @@ clear vertices faces;
 
 % 将 UDF 网格写入数据库
 if save_to_file
-    save(init.build_path(sprintf("run/%s.mat", MODEL_NAME_IN_DB)), 'UDF_grid', 'UDF_context', '-v7.3');
+    save(init.build_path(sprintf("run/%s.mat", MODEL_NAME_IN_DB)), 'udf', '-v7.3');
     fprintf('UDF 网格已保存到文件。\n');
 else
-    save(init.build_path(sprintf("run/%s.mat", MODEL_NAME_IN_DB)), 'UDF_grid', 'UDF_context', '-v7.3');
-    utils.write_udf(conn, UDF_grid, MODEL_NAME_IN_DB, UDF_context, CHUNK_SIZE, SRID, SDF_RESOLUTION);
+    save(init.build_path(sprintf("run/%s.mat", MODEL_NAME_IN_DB)), 'udf', '-v7.3');
+    utils.write_udf(conn, udf, MODEL_NAME_IN_DB, CHUNK_SIZE, SRID, SDF_RESOLUTION);
     fprintf('UDF 网格数据已成功写入数据库。\n');
 end
 

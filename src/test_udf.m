@@ -38,9 +38,7 @@ figure('Name', 'UDF 正确性检验', 'NumberTitle', 'off');
 hold on;
 
 % 步骤 A: 绘制原始STL模型 (半透明)
-FV.faces = faces;
-FV.vertices = vertices;
-patch(FV, 'FaceColor', 'blue', 'FaceAlpha', 0.3, 'EdgeColor', 'none');
+patch('Vertices', vertices, 'Faces', faces, 'FaceColor', 'blue', 'FaceAlpha', 0.3, 'EdgeColor', 'none');
 
 % 步骤 B: 绘制从UDF中提取出的表面点 (红色实心点)
 if ~isempty(udf_surface_points)

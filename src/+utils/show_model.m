@@ -6,8 +6,7 @@ function show_model(vertices, faces, name)
 
     try
         figure('Name', name, 'NumberTitle', 'off');
-        patch('Vertices', vertices, 'Faces', faces, 'FaceColor', [0.8 0.8 1.0], ...
-            'EdgeColor', 'none', 'FaceLighting', 'gouraud', 'AmbientStrength', 0.15);
+        patch('Vertices', vertices, 'Faces', faces, 'FaceColor', 'blue', 'FaceAlpha', 0.3, 'EdgeColor', 'none');
 
         % 设置显示效果
         axis equal;
@@ -15,7 +14,7 @@ function show_model(vertices, faces, name)
         xlabel('X');
         ylabel('Y');
         zlabel('Z');
-        set(gca,'YDir','reverse');
+        set(gca, 'YDir', 'reverse');
         title(name, 'Interpreter', 'none'); % 防止文件名中的下划线被转义
         grid on;
         rotate3d on; % 允许用鼠标旋转视角

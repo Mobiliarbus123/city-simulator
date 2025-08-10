@@ -19,9 +19,11 @@
         "Progressbar",
         "stlread",
         "trimesh",
+        "varargin",
         "waitbar",
         "xlabel",
         "ylabel",
         "zlabel"
-    ]
+    ],
+    "code-runner.showRunIconInEditorTitleMenu": false
 }

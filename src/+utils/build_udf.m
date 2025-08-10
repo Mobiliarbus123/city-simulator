@@ -1,4 +1,4 @@
-function [UDF_grid, context] = build_udf(vertices, faces, padding, sdf_resolution, bounds, ground)
+function UDF = build_udf(vertices, faces, padding, sdf_resolution, bounds, ground)
     % bounds: {min: [x_min, y_min, z_min], max: [x_max, y_max, z_max]}
     % context: min_bounds, max_bounds, grid_dims, x_vec, y_vec, z_vec
 
@@ -35,4 +35,5 @@ function [UDF_grid, context] = build_udf(vertices, faces, padding, sdf_resolutio
     delete(ppm);
 
     UDF_grid = reshape(distances, context.grid_dims);
+    UDF = utils.UDF(UDF_grid, context);
 end
