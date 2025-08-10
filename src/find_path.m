@@ -40,6 +40,7 @@ xlabel('X'); ylabel('Y'); zlabel('Z');
 %% 模拟
 loc = START_POINT;
 % 预分配
+% TODO: 自动扩增
 history_length = 10000;
 history = zeros(history_length, 3);
 % capacity_step = floor(total_distance / step_length * 0.5);
@@ -55,6 +56,8 @@ shouldStop = @(i, loc) ...
     abs(norm(loc - END_POINT)) < ends_tolerance ...
     || i > (check_stop_interval + 5) && (abs(norm(loc - history(i - check_stop_interval, :))) < 1);
 is_succeed = @(loc) abs(norm(loc - END_POINT)) < max_ends_tolerance;
+
+f = waitbar(0, '正在导航');
 
 while ~shouldStop(i, loc)
     i = i + 1;
@@ -119,8 +122,11 @@ while ~shouldStop(i, loc)
     % end
 
     history(i, :) = loc;
+    waitbar(1 - abs(norm(loc - END_POINT)) / total_distance, f, sprintf('正在导航: %d 步', i));
     plot3(loc(1), loc(2), loc(3), 'r.', 'MarkerSize', 3);
 end
+
+close(f);
 
 time_elapsed = toc(start_time);
 fprintf("--- 模拟结束 ---\n");
