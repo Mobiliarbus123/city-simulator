@@ -6,29 +6,28 @@ fprintf('正在加载STL模型...\n');
 vertices = [vertices(:, 1), vertices(:, 3), vertices(:, 2)] * 60;
 [vertices, faces] = utils.slice_model(vertices, faces, model_range.x(1), model_range.x(2), model_range.y(1), model_range.y(2));
 
-% --- 2. 调用您的函数来构建UDF ---
-% build_udf.m 必须在您的MATLAB路径中
-load(init.build_path(sprintf("run/%s.mat", MODEL_NAME_IN_DB)), 'UDF_grid', 'UDF_context');
-context = UDF_context;
+% --- 2. 加载 UDF ---
+fprintf('正在加载UDF数据...\n');
+udf = utils.load_udf_from_file(init.build_path(sprintf("run/%s.mat", MODEL_NAME_IN_DB)));
 
 % --- 3. 从UDF中提取“表面”点 ---
 fprintf('正在从UDF中提取零距离表面...\n');
 % 找到距离场中的最小值
-min_dist = min(UDF_grid(:));
+min_dist = min(udf.grid(:));
 % 设置一个小的容差，找到所有接近表面的点
 % 容差可以设置为分辨率的一半，以确保捕捉到最接近的体素
 tolerance = 1;
 % 找到所有值在 [min_dist, min_dist + tolerance] 范围内的点的线性索引
-surface_indices = find(UDF_grid <= (min_dist + tolerance));
+surface_indices = find(udf.grid <= (min_dist + tolerance));
 
 if isempty(surface_indices)
     warning('警告: 未能在UDF中找到距离值接近于零的点。');
     udf_surface_points = [];
 else
     % 将这些点的线性索引转换为三维下标索引 [y, x, z]
-    [y_idx, x_idx, z_idx] = ind2sub(context.grid_dims, surface_indices);
+    [y_idx, x_idx, z_idx] = ind2sub(udf.grid_dims, surface_indices);
     % 从坐标向量中获取这些点的真实世界坐标
-    udf_surface_points = [context.x_vec(x_idx)', context.y_vec(y_idx)', context.z_vec(z_idx)'];
+    udf_surface_points = [udf.x_vec(x_idx)', udf.y_vec(y_idx)', udf.z_vec(z_idx)'];
     fprintf('成功从UDF中提取了 %d 个表面点。\n', size(udf_surface_points, 1));
 end
 

@@ -1,10 +1,14 @@
 init.init_env;
 
-env.debug = false;
+env.debug = true;
 debug = @(varargin) (env.debug && fprintf(varargin{:}));
 
-START_POINT = [1100, 1200, 50];
-END_POINT = [1650, 1025, 50];
+% START_POINT = [1100, 1200, 50];
+% % END_POINT = [1650, 1025, 50];
+% END_POINT = [1320, 840, 100];
+
+START_POINT = [-200, -100, 50];
+END_POINT = [-1500, -1800, 50];
 
 repulsion_weight = @(distance) 50000 / (distance ^ 3);
 boundary_weight = @(distance) 5000 / ((distance + 3) ^ 5);
@@ -14,8 +18,8 @@ up_weight = 0.3;
 
 max_counted_distance = 200;
 step_length = 1;
-ends_tolerance = 20;
-max_ends_tolerance = 50;
+ends_tolerance = 10;
+max_ends_tolerance = 30;
 move_speed_tolerance = 0.05;
 
 boundary.x = [model_range.x(1) - 25, model_range.x(2) + 25];
@@ -41,9 +45,9 @@ xlabel('X'); ylabel('Y'); zlabel('Z');
 loc = START_POINT;
 % 预分配
 % TODO: 自动扩增
-history_length = 10000;
+history_length = floor(total_distance / step_length * 1.5);
 history = zeros(history_length, 3);
-% capacity_step = floor(total_distance / step_length * 0.5);
+capacity_step = floor(total_distance / step_length * 0.5);
 
 fprintf("--- 开始模拟 ---\n");
 fprintf("总距离：%.2f\n", total_distance);
@@ -52,14 +56,14 @@ start_time = tic;
 i = 0;
 
 check_stop_interval = floor(1 / move_speed_tolerance);
-shouldStop = @(i, loc) ...
+shouldStop = @(i, loc, history) ...
     abs(norm(loc - END_POINT)) < ends_tolerance ...
     || i > (check_stop_interval + 5) && (abs(norm(loc - history(i - check_stop_interval, :))) < 1);
 is_succeed = @(loc) abs(norm(loc - END_POINT)) < max_ends_tolerance;
 
 f = waitbar(0, '正在导航');
 
-while ~shouldStop(i, loc)
+while ~shouldStop(i, loc, history)
     i = i + 1;
     % 计算建筑物排斥力
     udf_value = udf.get_value(loc);
@@ -78,6 +82,7 @@ while ~shouldStop(i, loc)
 
     % 计算地面排斥力
     F_ground = [0, 0, ground_weight(loc(3))];
+    debug("地面排斥力: %.2f, %.2f, %.2f\n", F_ground(1), F_ground(2), F_ground(3));
 
     % 计算目标吸引力
     task_vec = (END_POINT - loc);
@@ -115,11 +120,12 @@ while ~shouldStop(i, loc)
 
     % 记录历史位置
     debug("总力: %.2f, %.2f, %.2f  当前位置：%.2f, %.2f, %.2f\n", F_total(1), F_total(2), F_total(3), loc(1), loc(2), loc(3));
+    debug("\n");
 
-    % if i > history_length
-    %     history(history_length + 1:history_length + capacity_step, :) = 0;
-    %     history_length = history_length + capacity_step;
-    % end
+    if i > history_length
+        history(history_length + 1:history_length + capacity_step, :) = 0;
+        history_length = history_length + capacity_step;
+    end
 
     history(i, :) = loc;
     waitbar(1 - abs(norm(loc - END_POINT)) / total_distance, f, sprintf('正在导航: %d 步', i));
@@ -138,5 +144,6 @@ fprintf("是否成功到达终点：%s\n", string(is_succeed(loc)));
 fprintf('--------------------\n\n');
 
 % 储存过程
+step = i;
 save_path = init.build_path(sprintf("run/%s_history.mat", MODEL_NAME_IN_DB));
-save(save_path, 'history');
+save(save_path, 'history', 'step', '-v7.3');
