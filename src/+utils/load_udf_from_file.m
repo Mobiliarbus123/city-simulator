@@ -4,6 +4,9 @@ function udf = load_udf_from_file(file_path)
 
     if isfield(data, 'udf')
         udf = data.udf;
+        if ~isfield(udf, 'dx')
+            udf = utils.UDF(udf.grid, udf);
+        end
     else
         % 兼容旧版本
         udf = utils.UDF(data.UDF_grid, data.UDF_context);

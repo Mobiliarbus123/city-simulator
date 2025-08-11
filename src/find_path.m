@@ -1,6 +1,7 @@
 init.init_env;
 
 env.debug = true;
+env.reverse = false;
 debug = @(varargin) (env.debug && fprintf(varargin{:}));
 
 % START_POINT = [1100, 1200, 50];
@@ -9,6 +10,12 @@ debug = @(varargin) (env.debug && fprintf(varargin{:}));
 
 START_POINT = [-200, -100, 50];
 END_POINT = [-1500, -1800, 50];
+
+if env.reverse
+    temp = START_POINT;
+    START_POINT = END_POINT;
+    END_POINT = temp;
+end
 
 repulsion_weight = @(distance) 50000 / (distance ^ 3);
 boundary_weight = @(distance) 5000 / ((distance + 3) ^ 5);
@@ -145,5 +152,11 @@ fprintf('--------------------\n\n');
 
 % 储存过程
 step = i;
-save_path = init.build_path(sprintf("run/%s_history.mat", MODEL_NAME_IN_DB));
+
+if env.reverse
+    save_path = init.build_path(sprintf("run/%s_reverse_history.mat", MODEL_NAME_IN_DB));
+else
+    save_path = init.build_path(sprintf("run/%s_history.mat", MODEL_NAME_IN_DB));
+end
+
 save(save_path, 'history', 'step', '-v7.3');
