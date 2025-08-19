@@ -18,6 +18,7 @@ fprintf('--- 数据尺寸检查 ---\n');
 fprintf('模型包围盒尺寸: X=%.5f, Y=%.5f, Z=%.5f\n', size_x, size_y, size_z);
 fprintf('Vertices 矩阵的尺寸: %d x %d\n', size(vertices, 1), size(vertices, 2));
 fprintf('Faces 矩阵的尺寸: %d x %d\n', size(faces, 1), size(faces, 2));
+
 fprintf('--------------------\n\n');
 clear size_x size_y size_z;
 
@@ -30,15 +31,18 @@ fprintf('UDF 网格构建完成。\n');
 toc;
 fprintf('--------------------\n\n');
 
+% 构建高度信息
+max_height_map = utils.MaxHMap(udf);
+
 % 丢弃无效数据
 clear vertices faces;
 
 % 将 UDF 网格写入数据库
 if save_to_file
-    save(init.build_path(sprintf("run/%s.mat", MODEL_NAME_IN_DB)), 'udf', '-v7.3');
+    save(init.build_path(sprintf("run/%s.mat", MODEL_NAME_IN_DB)), "udf", "max_height_map", "-v7.3");
     fprintf('UDF 网格已保存到文件。\n');
 else
-    save(init.build_path(sprintf("run/%s.mat", MODEL_NAME_IN_DB)), 'udf', '-v7.3');
+    save(init.build_path(sprintf("run/%s.mat", MODEL_NAME_IN_DB)), "udf", "max_height_map", "-v7.3");
     utils.write_udf(conn, udf, MODEL_NAME_IN_DB, CHUNK_SIZE, SRID, SDF_RESOLUTION);
     fprintf('UDF 网格数据已成功写入数据库。\n');
 end

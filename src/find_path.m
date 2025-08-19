@@ -11,6 +11,7 @@ debug = @(varargin) (env.debug && fprintf(varargin{:}));
 START_POINT = [-200, -100, 50];
 END_POINT = [-1500, -1800, 50];
 
+
 if env.reverse
     temp = START_POINT;
     START_POINT = END_POINT;
@@ -21,7 +22,7 @@ repulsion_weight = @(distance) 50000 / (distance ^ 3);
 boundary_weight = @(distance) 5000 / ((distance + 3) ^ 5);
 task_weight = @(distance) (distance < 100) .* 5 + 5;
 ground_weight = @(distance) exp(- ((distance / 100) - 1));
-up_weight = 0.3;
+up_weight = 0.5;
 
 max_counted_distance = 200;
 step_length = 1;

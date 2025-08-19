@@ -17,6 +17,7 @@
         "parfor",
         "Postgre",
         "Progressbar",
+        "repmat",
         "sprintf",
         "stlread",
         "trimesh",
