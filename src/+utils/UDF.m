@@ -43,7 +43,7 @@ classdef UDF < handle
             if px < obj.min_bounds(1) || px > obj.max_bounds(1) || ...
                     py < obj.min_bounds(2) || py > obj.max_bounds(2) || ...
                     pz < obj.min_bounds(3) || pz > obj.max_bounds(3)
-                distance = NaN; % 与 interp3 行为一致，界外点返回 NaN
+                distance = NaN;
                 return;
             end
 
@@ -91,6 +91,55 @@ classdef UDF < handle
             c1 = c01 * (1 - yd) + c11 * yd;
 
             distance = c0 * (1 - zd) + c1 * zd;
+        end
+
+        function grad = get_gradient(obj, p)
+
+            px = p(1); py = p(2); pz = p(3);
+
+            % 找到左下近似格点索引
+            ix0 = floor((px - obj.x_vec(1)) / obj.dx) + 1;
+            iy0 = floor((py - obj.y_vec(1)) / obj.dy) + 1;
+            iz0 = floor((pz - obj.z_vec(1)) / obj.dz) + 1;
+
+            % 限制范围
+            ix0 = max(1, min(ix0, length(obj.x_vec) - 1));
+            iy0 = max(1, min(iy0, length(obj.y_vec) - 1));
+            iz0 = max(1, min(iz0, length(obj.z_vec) - 1));
+
+            ix1 = ix0 + 1;
+            iy1 = iy0 + 1;
+            iz1 = iz0 + 1;
+
+            % 归一化坐标 (0~1)
+            tx = (px - obj.x_vec(ix0)) / obj.dx;
+            ty = (py - obj.y_vec(iy0)) / obj.dy;
+            tz = (pz - obj.z_vec(iz0)) / obj.dz;
+
+            % 取出 8 个顶点值
+            c000 = obj.grid(iy0, ix0, iz0);
+            c100 = obj.grid(iy0, ix1, iz0);
+            c010 = obj.grid(iy1, ix0, iz0);
+            c110 = obj.grid(iy1, ix1, iz0);
+            c001 = obj.grid(iy0, ix0, iz1);
+            c101 = obj.grid(iy0, ix1, iz1);
+            c011 = obj.grid(iy1, ix0, iz1);
+            c111 = obj.grid(iy1, ix1, iz1);
+
+            % 三线性插值的梯度
+            dfdx0 = (c100 - c000) * (1 - ty) * (1 - tz) + (c110 - c010) * ty * (1 - tz) ...
+                + (c101 - c001) * (1 - ty) * tz + (c111 - c011) * ty * tz;
+            dfdx = dfdx0 / obj.dx;
+
+            dfdy0 = (c010 - c000) * (1 - tx) * (1 - tz) + (c110 - c100) * tx * (1 - tz) ...
+                + (c011 - c001) * (1 - tx) * tz + (c111 - c101) * tx * tz;
+            dfdy = dfdy0 / obj.dy;
+
+            dfdz0 = (c001 - c000) * (1 - tx) * (1 - ty) + (c101 - c100) * tx * (1 - ty) ...
+                + (c011 - c010) * (1 - tx) * ty + (c111 - c110) * tx * ty;
+            dfdz = dfdz0 / obj.dz;
+
+            grad = [dfdx, dfdy, dfdz];
         end
 
     end

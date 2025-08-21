@@ -1,7 +1,7 @@
 init.init_env;
 
 env.debug = true;
-env.reverse = false;
+env.reverse = true;
 debug = @(varargin) (env.debug && fprintf(varargin{:}));
 
 % % -2k
@@ -20,7 +20,7 @@ if env.reverse
     INTERMEDIATE_POINTS = flipud(INTERMEDIATE_POINTS);
 end
 
-repulsion_weight = @(distance) 100000 / (distance ^ 3);
+repulsion_weight = @(distance) 50000 / (distance ^ 3);
 boundary_weight = @(distance) 5000 / ((distance + 3) ^ 5);
 task_weight = @(distance) (distance < 100) .* 5 + 5;
 ground_weight = @(distance) exp(- ((distance / 100) - 1));
@@ -103,7 +103,7 @@ for n = 1:size(way_points, 1) - 1
         if udf_value > max_counted_distance
             F_repulsion = [0, 0, 0];
         else
-            grad = utils.gradient(udf, loc);
+            grad = udf.get_gradient(loc);
             F_repulsion = grad * repulsion_weight(udf_value);
         end
 
