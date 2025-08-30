@@ -1,7 +1,7 @@
 init.init_env;
 
 env.debug = true;
-env.reverse = true;
+env.reverse = false;
 debug = @(varargin) (env.debug && fprintf(varargin{:}));
 
 % % -2k
@@ -9,8 +9,8 @@ debug = @(varargin) (env.debug && fprintf(varargin{:}));
 % END_POINT = [-1500, -1800, 50];
 
 % 2k
-START_POINT = [400, 1400, 50];
-END_POINT = [1900, 200, 50];
+START_POINT = [400, 1400, 200];
+END_POINT = [1900, 200, 200];
 INTERMEDIATE_POINTS = [1500, 1400, 300];
 
 if env.reverse
