@@ -3,21 +3,22 @@ function [udf, max_height_map] = load_udf_from_file(file_path)
     data = load(file_path);
 
     if isfield(data, 'udf')
+
         udf = data.udf;
 
-        if ~isfield(udf, 'dx')
-            udf = utils.UDF(udf.grid, udf);
+        if ~isfield(udf, 'dx') || ~isa(data.udf, 'utils.udf.UDF')
+            udf = utils.udf.UDF(udf.grid, udf);
         end
 
     else
         % 兼容旧版本
-        udf = utils.UDF(data.UDF_grid, data.UDF_context);
+        udf = utils.udf.UDF(data.UDF_grid, data.UDF_context);
     end
 
     if isfield(data, 'max_height_map')
         max_height_map = data.max_height_map;
     else
-        max_height_map = utils.MaxHMap(udf);
+        max_height_map = utils.udf.MaxHMap(udf);
     end
 
 end

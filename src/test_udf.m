@@ -2,13 +2,13 @@ init.init_env;
 
 % --- 1. 加载原始STL模型数据 ---
 fprintf('正在加载STL模型...\n');
-[vertices, faces] = utils.load_model(stl_file);
+[vertices, faces] = utils.model.load_model(stl_file);
 vertices = [vertices(:, 1), vertices(:, 3), vertices(:, 2)] * 60;
-[vertices, faces] = utils.slice_model(vertices, faces, model_range.x(1), model_range.x(2), model_range.y(1), model_range.y(2));
+[vertices, faces] = utils.model.slice_model(vertices, faces, model_range.x(1), model_range.x(2), model_range.y(1), model_range.y(2));
 
 % --- 2. 加载 UDF ---
 fprintf('正在加载UDF数据...\n');
-udf = utils.load_udf_from_file(init.build_path(sprintf("run/%s.mat", MODEL_NAME_IN_DB)));
+udf = utils.udf.load_udf_from_file(init.build_path(sprintf("run/%s.mat", MODEL_NAME_IN_DB)));
 
 % --- 3. 从UDF中提取“表面”点 ---
 fprintf('正在从UDF中提取零距离表面...\n');

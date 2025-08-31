@@ -23,11 +23,11 @@ function UDF = build_udf(vertices, faces, padding, sdf_resolution, bounds, groun
     ppm = ParforProgressbar(total_voxels, 'progressBarUpdatePeriod', 3);
 
     distances = zeros(total_voxels, 1);
-    bvh = utils.SimpleBVH(vertices, faces);
+    bvh = utils.udf.SimpleBVH(vertices, faces);
 
     parfor i = 1:total_voxels
         p = query_points(i, :);
-        dist_val = min(bvh.query_single_point(p), abs(p(3) - ground));
+        dist_val = bvh.query_single_point(p);
         distances(i) = dist_val;
         ppm.increment();
     end
@@ -35,5 +35,5 @@ function UDF = build_udf(vertices, faces, padding, sdf_resolution, bounds, groun
     delete(ppm);
 
     UDF_grid = reshape(distances, context.grid_dims);
-    UDF = utils.UDF(UDF_grid, context);
+    UDF = utils.udf.UDF(UDF_grid, context);
 end

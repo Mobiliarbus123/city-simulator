@@ -1,25 +1,26 @@
 init.init_env;
 
 env.reverse = false;
+env = utils.Ref(env);
+tag = "multi_2x";
 
 % 加载 STL 模型
 fprintf('加载 STL 模型...\n');
-[vertices, faces] = utils.load_model(stl_file);
+[vertices, faces] = utils.model.load_model(stl_file);
 vertices = [vertices(:, 1), vertices(:, 3), vertices(:, 2)] * 60;
-[vertices, faces] = utils.slice_model(vertices, faces, model_range.x(1), model_range.x(2), model_range.y(1), model_range.y(2));
+[vertices, faces] = utils.model.slice_model(vertices, faces, model_range.x(1), model_range.x(2), model_range.y(1), model_range.y(2));
 
 % 加载路径
 fprintf('加载路径...\n');
-load_path = init.build_path(sprintf("run/%s_history.mat", MODEL_NAME_IN_DB));
-load(load_path, "history", "step");
+load_path = init.build_path(sprintf("run/%s_%s_history.mat", MODEL_NAME_IN_DB, tag));
+load(load_path, "swarm");
 
 % 加载反向路径
-if env.reverse
+if env.value.reverse
     fprintf('加载反向路径...\n');
-    load_path = init.build_path(sprintf("run/%s_reverse_history.mat", MODEL_NAME_IN_DB));
+    load_path = init.build_path(sprintf("run/%s_%s_reverse_history.mat", MODEL_NAME_IN_DB, tag));
     reverse_data = load(load_path);
-    history_reverse = reverse_data.history;
-    step_reverse = reverse_data.step;
+    swarm_reverse = reverse_data.swarm;
 end
 
 % 绘图
@@ -35,15 +36,29 @@ xlabel('X'); ylabel('Y'); zlabel('Z');
 
 fprintf('绘制路径...\n');
 
-for i = 1:step
-    plot3(history(i, 1), history(i, 2), history(i, 3), 'r.', 'MarkerSize', 3);
+for i = 1:length(swarm.drones)
+    drone = swarm.drones(i);
+    history = drone.history;
+    step = size(history, 1);
+
+    for j = 1:step
+        plot3(history(j, 1), history(j, 2), history(j, 3), 'r.', 'MarkerSize', 3);
+    end
+
 end
 
-if env.reverse
+if env.value.reverse
     fprintf('绘制反向路径...\n');
 
-    for i = 1:step_reverse
-        plot3(history_reverse(i, 1), history_reverse(i, 2), history_reverse(i, 3), 'g.', 'MarkerSize', 3);
+    for i = 1:length(swarm_reverse.drones)
+        drone = swarm_reverse.drones(i);
+        history = drone.history;
+        step = size(history, 1);
+
+        for j = 1:step
+            plot3(history(j, 1), history(j, 2), history(j, 3), 'g.', 'MarkerSize', 3);
+        end
+
     end
 
 end

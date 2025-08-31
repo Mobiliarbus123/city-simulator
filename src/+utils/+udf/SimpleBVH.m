@@ -2,8 +2,6 @@ classdef SimpleBVH < handle
 % SimpleBVH - 一个简单的层次包围盒(BVH)加速结构。
 %
 % 用于快速查询一个或多个点到三角网格的无符号距离 (UDF)。
-%
-% 版本: 2.0 (修正了最根本的“值类 vs 句柄类”的错误，确保状态正确更新)
 
     properties (SetAccess = private)
         Vertices, Faces, Tree, RootNodeIndex
