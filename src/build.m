@@ -23,7 +23,7 @@ clear size_x size_y size_z;
 fprintf('--- 构建 UDF 网格 ---\n');
 fprintf("开始构建 UDF 网格...\n");
 tic;
-udf = utils.udf.build_udf(vertices, faces, PADDING, SDF_RESOLUTION, bound, 35);
+udf = utils.udf.build_udf(vertices, faces, PADDING, SDF_RESOLUTION, bound);
 fprintf('UDF 网格构建完成。\n');
 toc;
 fprintf('--------------------\n\n');

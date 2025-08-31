@@ -1,4 +1,4 @@
-function UDF = build_udf(vertices, faces, padding, sdf_resolution, bounds, ground)
+function UDF = build_udf(vertices, faces, padding, sdf_resolution, bounds)
     % bounds: {min: [x_min, y_min, z_min], max: [x_max, y_max, z_max]}
     % context: min_bounds, max_bounds, grid_dims, x_vec, y_vec, z_vec
 
