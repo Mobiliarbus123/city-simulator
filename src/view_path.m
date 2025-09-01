@@ -36,29 +36,15 @@ xlabel('X'); ylabel('Y'); zlabel('Z');
 
 fprintf('绘制路径...\n');
 
-for i = 1:length(swarm.drones)
-    drone = swarm.drones(i);
-    history = drone.history;
-    step = size(history, 1);
-
-    for j = 1:step
-        plot3(history(j, 1), history(j, 2), history(j, 3), 'r.', 'MarkerSize', 3);
-    end
-
-end
+swarm.foreach(@(drone) utils.path.draw("start", drone.start_point, drone.color));
+swarm.foreach(@(drone) utils.path.draw("end", drone.end_point, drone.color));
+swarm.foreach(@(drone) utils.path.draw("path", drone.history, drone.color));
 
 if env.value.reverse
     fprintf('绘制反向路径...\n');
 
-    for i = 1:length(swarm_reverse.drones)
-        drone = swarm_reverse.drones(i);
-        history = drone.history;
-        step = size(history, 1);
-
-        for j = 1:step
-            plot3(history(j, 1), history(j, 2), history(j, 3), 'g.', 'MarkerSize', 3);
-        end
-
-    end
+    swarm_reverse.foreach(@(drone) utils.path.draw("start", drone.start_point, drone.color));
+    swarm_reverse.foreach(@(drone) utils.path.draw("end", drone.end_point, drone.color));
+    swarm_reverse.foreach(@(drone) utils.path.draw("path", drone.history, drone.color));
 
 end
