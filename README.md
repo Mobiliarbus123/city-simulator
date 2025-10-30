@@ -4,6 +4,8 @@
 
 本项目为使用人工势场进行实时的无人机群路径规划和防撞制作了最小可行性模型并模拟验证了可行性。
 
+![](https://github.com/user-attachments/assets/6f001d16-3f13-4ad4-8f88-a8780c2f5fd4)
+
 ## Requirements
 
 Matlab >= 2024a
