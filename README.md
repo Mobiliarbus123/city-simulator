@@ -1,3 +1,9 @@
+# UAV Clusters Path Planning Based on Artificial Potential Field In Low-altitude Urban Scenarios
+
+基于人工势场的低空城市环境无人机群路径规划
+
+本项目为使用人工势场进行实时的无人机群路径规划和防撞制作了最小可行性模型并模拟验证了可行性。
+
 ## Requirements
 
 Matlab >= 2024a
